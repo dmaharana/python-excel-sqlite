@@ -21,6 +21,17 @@ class User(Base):
     addr = Column(String, name=column_mapping['Address'])
 
 def read_excel_to_sqlite(sheet_name, excel_file, db_file):
+    """
+    Reads data from an Excel file and writes it to a SQLite database.
+
+    Parameters:
+        sheet_name (str): The name of the Excel sheet to read from.
+        excel_file (str): The path to the Excel file.
+        db_file (str): The path to the SQLite database file.
+
+    Returns:
+        None
+    """
     engine = create_engine(f'sqlite:///{db_file}')
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
@@ -32,6 +43,7 @@ def read_excel_to_sqlite(sheet_name, excel_file, db_file):
 
     for index, row in df.iterrows():
         user = session.get(User, index)
+        # Update user if it exists, otherwise create a new one
         if user and not all(getattr(user, column_mapping[col]) == val
                 for col, val in row.items()):
             for col, val in row.items():
@@ -47,6 +59,15 @@ def read_excel_to_sqlite(sheet_name, excel_file, db_file):
     session.close()
 
 def main():
+    """
+    A function that reads data from an Excel file and writes it to a SQLite database.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     excel_file = 'users.xlsx'
     sheet_name = 'Sheet1_2'
     db_file = 'users.db'
