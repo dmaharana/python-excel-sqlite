@@ -38,6 +38,10 @@ def read_excel_to_sqlite(sheet_name: str, excel_file: str, db_file: str) -> None
     Session: sessionmaker = sessionmaker(bind=engine)
     session: Session = Session()
 
+    # define variable to store count of rows being updated and inserted
+    rows_updated: int = 0
+    rows_inserted: int = 0
+
     # Read rows from Excel file
     df: pd.DataFrame = pd.read_excel(excel_file, sheet_name=sheet_name)
 
@@ -54,14 +58,22 @@ def read_excel_to_sqlite(sheet_name: str, excel_file: str, db_file: str) -> None
             for col, val in row.items():
                 setattr(user, column_mapping[col], val)
             session.merge(user)
+            rows_updated += 1
         elif not user:
             new_user: User = User(
                 id=index,
                 **{column_mapping[col]: val for col, val in row.items()}
             )
             session.add(new_user)
+            rows_inserted += 1
     session.commit()
     session.close()
+
+    if rows_inserted == 0 and rows_updated == 0:
+        print("No rows were inserted or updated.")
+    else:
+        print("Row(s) inserted:", rows_inserted)
+        print("Row(s) updated:", rows_updated)
 
 def main() -> None:
     """
