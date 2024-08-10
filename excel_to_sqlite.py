@@ -37,9 +37,13 @@ def read_excel_to_sqlite(sheet_name, excel_file, db_file):
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    # Read rows from Excel file
     df = pd.read_excel(excel_file, sheet_name=sheet_name)
+
+    # keep only required columns
     df = df[list(column_mapping.keys())]
-    print("Read rows from Excel file:", df.shape[0])
+    
+    print("Number of rows read from excel file:", df.shape[0])
 
     for index, row in df.iterrows():
         user = session.get(User, index)
