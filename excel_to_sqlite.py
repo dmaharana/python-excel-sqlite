@@ -1,11 +1,12 @@
 import pandas as pd
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
+from typing import Dict, Any
 
 Base = declarative_base()
 
 # Map excel headers to table columns
-column_mapping = {
+column_mapping: Dict[str, str] = {
     'Employee ID': 'eid',
     'First Name': 'fname',
     'Last Name': 'lname',
@@ -14,13 +15,13 @@ column_mapping = {
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    eid = Column(String, name=column_mapping['Employee ID'])
-    fname = Column(String, name=column_mapping['First Name'])
-    lname = Column(String, name=column_mapping['Last Name'])
-    addr = Column(String, name=column_mapping['Address'])
+    id: Column[Integer] = Column(Integer, primary_key=True)
+    eid: Column[String] = Column(String, name=column_mapping['Employee ID'])
+    fname: Column[String] = Column(String, name=column_mapping['First Name'])
+    lname: Column[String] = Column(String, name=column_mapping['Last Name'])
+    addr: Column[String] = Column(String, name=column_mapping['Address'])
 
-def read_excel_to_sqlite(sheet_name, excel_file, db_file):
+def read_excel_to_sqlite(sheet_name: str, excel_file: str, db_file: str) -> None:
     """
     Reads data from an Excel file and writes it to a SQLite database.
 
@@ -32,37 +33,49 @@ def read_excel_to_sqlite(sheet_name, excel_file, db_file):
     Returns:
         None
     """
-    engine = create_engine(f'sqlite:///{db_file}')
+    engine: create_engine = create_engine(f'sqlite:///{db_file}')
     Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    Session: sessionmaker = sessionmaker(bind=engine)
+    session: Session = Session()
+
+    # define variable to store count of rows being updated and inserted
+    rows_updated: int = 0
+    rows_inserted: int = 0
 
     # Read rows from Excel file
-    df = pd.read_excel(excel_file, sheet_name=sheet_name)
+    df: pd.DataFrame = pd.read_excel(excel_file, sheet_name=sheet_name)
 
     # keep only required columns
     df = df[list(column_mapping.keys())]
-    
+
     print("Number of rows read from excel file:", df.shape[0])
 
     for index, row in df.iterrows():
-        user = session.get(User, index)
+        user: Optional[User] = session.get(User, index)
         # Update user if it exists, otherwise create a new one
         if user and not all(getattr(user, column_mapping[col]) == val
                 for col, val in row.items()):
             for col, val in row.items():
                 setattr(user, column_mapping[col], val)
             session.merge(user)
+            rows_updated += 1
         elif not user:
-            new_user = User(
+            new_user: User = User(
                 id=index,
                 **{column_mapping[col]: val for col, val in row.items()}
             )
             session.add(new_user)
+            rows_inserted += 1
     session.commit()
     session.close()
 
-def main():
+    if rows_inserted == 0 and rows_updated == 0:
+        print("No rows were inserted or updated.")
+    else:
+        print("Row(s) inserted:", rows_inserted)
+        print("Row(s) updated:", rows_updated)
+
+def main() -> None:
     """
     A function that reads data from an Excel file and writes it to a SQLite database.
 
@@ -72,9 +85,9 @@ def main():
     Returns:
         None
     """
-    excel_file = 'users.xlsx'
-    sheet_name = 'Sheet1_2'
-    db_file = 'users.db'
+    excel_file: str = 'users.xlsx'
+    sheet_name: str = 'Sheet1_2'
+    db_file: str = 'users.db'
     read_excel_to_sqlite(sheet_name, excel_file, db_file)
 
 if __name__ == "__main__":
