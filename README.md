@@ -1,27 +1,20 @@
-# Backup Excel Data
+# Excel to SQLite Backup
 
-This project is a simple backup of excel data into a SQLite database. The backup process involves reading an Excel file and writing the data into a SQLite database.
+This repository contains two projects:
+
+- [py-excel-sqlite](py-excel-sqlite) is a Python project that reads data from an Excel file and writes it to a SQLite database.
+- [go-excel-sqlite](go-excel-sqlite) is a Go project that performs the same functionality.
+
+Both projects are simple backup tools for Excel data into a SQLite database. The backup process involves reading an Excel file and writing the data into a SQLite database.
+
+This project was created with the help of Codeium, an AI company that provides code autocomplete and search capabilities.
 
 ## Usage
 
-1. Make sure you have Python 3 installed.
-2. Clone the repository.
-3. Install the required dependencies by running `pip install -r requirements.txt` in the project directory.
-4. Run the backup script by running `python backup/write_excel_to_sqlite.py` in the project directory.
-
-## Requirements
-
-- Python 3
-- pandas
-- openpyxl
-- sqlalchemy
-
-## Project Structure
-
-The project is structured as follows:
-
-- `excel_to_sqlite.py`: contains the code to read Excel data and write it to a SQLite database.
-- `requirements.txt`: contains the list of required Python packages.
+1. Clone the repository.
+2. Navigate to the desired project directory.
+3. Install the required dependencies.
+4. Run the backup script.
 
 ## Contributing
 
