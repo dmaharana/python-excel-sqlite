@@ -7,7 +7,7 @@ This repository contains two projects:
 
 Both projects are simple backup tools for Excel data into a SQLite database. The backup process involves reading an Excel file and writing the data into a SQLite database.
 
-This project was created with the help of Codeium, an AI company that provides code autocomplete and search capabilities.
+This project was created with the help of [Codeium](https://codeium.com), an AI company that provides code autocomplete and search capabilities.
 
 ## Usage
 
